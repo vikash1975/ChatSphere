@@ -12,7 +12,7 @@ dotenv.config();
 
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://chatsphere-4pmw.onrender.com",
   credentials: true,               // cookies bhejne ke liye
 }));
 app.use(cookieParser());
