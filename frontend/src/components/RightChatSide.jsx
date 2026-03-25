@@ -83,32 +83,61 @@ const ChatArea = ({ selectedUser, onBack }) => {
     };
   }, [selectedUser?._id]);
 
-  //  FIXED TYPING HANDLER
+
   const handleTyping = useCallback((e) => {
-    const value = e.target.value;
-    setMessage(value);
+  const value = e.target.value;
+  setMessage(value);
 
-    // Clear previous timeout
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
+  // Emit typing immediately if user starts typing
+  if (selectedUser?._id && value.trim().length > 0) {
+    socket.emit("typing", {
+      receiverId: selectedUser._id,
+      senderId: currentUserId
+    });
+  }
 
-    // Only emit if typing and user selected
-    if (value.trim().length > 0 && selectedUser?._id) {
-      socket.emit("typing", {
+  // Clear previous timeout
+  if (typingTimeoutRef.current) {
+    clearTimeout(typingTimeoutRef.current);
+  }
+
+  // Set timeout to stop typing 2s after last keystroke
+  typingTimeoutRef.current = setTimeout(() => {
+    if (selectedUser?._id) {
+      socket.emit("stopTyping", {
         receiverId: selectedUser._id,
         senderId: currentUserId
       });
+    }
+  }, 2000);
+}, [selectedUser?._id, currentUserId]);
+
+//   //  FIXED TYPING HANDLER
+//   const handleTyping = useCallback((e) => {
+//     const value = e.target.value;
+//     setMessage(value);
+
+//     // Clear previous timeout
+//     if (typingTimeoutRef.current) {
+//       clearTimeout(typingTimeoutRef.current);
+//     }
+
+//     // Only emit if typing and user selected
+//     if (value.trim().length > 0 && selectedUser?._id) {
+//       socket.emit("typing", {
+//         receiverId: selectedUser._id,
+//         senderId: currentUserId
+//       });
 
     
-   typingTimeoutRef.current = setTimeout(() => {
-  socket.emit("stopTyping", {
-    receiverId: selectedUser._id,
-    senderId: currentUserId
-  });
-}, 2000); 
-    }
-  }, [selectedUser?._id, currentUserId]);
+//    typingTimeoutRef.current = setTimeout(() => {
+//   socket.emit("stopTyping", {
+//     receiverId: selectedUser._id,
+//     senderId: currentUserId
+//   });
+// }, 2000); 
+//     }
+//   }, [selectedUser?._id, currentUserId]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
