@@ -54,6 +54,13 @@ io.on('connection',(socket)=>{
 });
 });
 
+socket.on("stopTyping", (data) => {
+  const receiverSocketId = userSocketmap[data.receiverId];
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit("stopTyping", { senderId: data.senderId });
+  }
+});
+
 export {app, io, server}
 
 
