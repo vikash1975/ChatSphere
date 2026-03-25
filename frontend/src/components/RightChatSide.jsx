@@ -252,7 +252,7 @@ const NoMessages = () => (
 const NoChatSelected = () => (
   <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
     <SparklesIcon className="w-28 h-28 text-purple-400/50 animate-pulse mb-8" />
-    <h2 className="text-4xl text-gray-200 font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text mb-4">
+    <h2 className="text-4xl text-white font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text mb-4">
       Welcome to ChatSphere
     </h2>
     <p className="text-xl text-gray-300">Select a friend to start chatting</p>
