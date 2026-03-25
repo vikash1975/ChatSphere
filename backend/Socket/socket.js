@@ -23,43 +23,71 @@ export const getReceiverSocketId=(receiverId)=>{
 }
 
 const userSocketmap={};
+io.on('connection', (socket) => {
+  console.log("User connected", socket.id);
 
+  const userId = socket.handshake.query.userId;
+  if(userId) userSocketmap[userId] = socket.id;
 
-io.on('connection',(socket)=>{
-   console.log("User connected", socket.id);
+  // Send online users
+  io.emit("getOnlyUsers", Object.keys(userSocketmap));
 
-   const userId = socket.handshake.query.userId;
-   console.log("UserId from socket:", userId);
+  // Typing
+  socket.on("typing", (data) => {
+    const receiverSocketId = userSocketmap[data.receiverId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("typing", { senderId: socket.handshake.query.userId });
+    }
+  });
 
-   if(userId) userSocketmap[userId] = socket.id;
+  socket.on("stopTyping", (data) => {
+    const receiverSocketId = userSocketmap[data.receiverId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("stopTyping", { senderId: data.senderId });
+    }
+  });
 
-   console.log("Socket Map:", userSocketmap);
-
-   //  send online users
-   io.emit("getOnlyUsers", Object.keys(userSocketmap));
-
-   socket.on('disconnect',()=>{
-        delete userSocketmap[userId];
-        io.emit('getOnlyUsers', Object.keys(userSocketmap));
-   });
-
-   socket.on("typing", (data) => {
-  const receiverSocketId = userSocketmap[data.receiverId];
-
-  if (receiverSocketId) {
-    io.to(receiverSocketId).emit("typing", {
-      senderId: socket.handshake.query.userId
-    });
-  }
+  socket.on('disconnect', () => {
+    delete userSocketmap[userId];
+    io.emit('getOnlyUsers', Object.keys(userSocketmap));
+  });
 });
-});
 
-socket.on("stopTyping", (data) => {
-  const receiverSocketId = userSocketmap[data.receiverId];
-  if (receiverSocketId) {
-    io.to(receiverSocketId).emit("stopTyping", { senderId: data.senderId });
-  }
-});
+// io.on('connection',(socket)=>{
+//    console.log("User connected", socket.id);
+
+//    const userId = socket.handshake.query.userId;
+//    console.log("UserId from socket:", userId);
+
+//    if(userId) userSocketmap[userId] = socket.id;
+
+//    console.log("Socket Map:", userSocketmap);
+
+//    //  send online users
+//    io.emit("getOnlyUsers", Object.keys(userSocketmap));
+
+//    socket.on('disconnect',()=>{
+//         delete userSocketmap[userId];
+//         io.emit('getOnlyUsers', Object.keys(userSocketmap));
+//    });
+
+//    socket.on("typing", (data) => {
+//   const receiverSocketId = userSocketmap[data.receiverId];
+
+//   if (receiverSocketId) {
+//     io.to(receiverSocketId).emit("typing", {
+//       senderId: socket.handshake.query.userId
+//     });
+//   }
+// });
+// });
+
+// socket.on("stopTyping", (data) => {
+//   const receiverSocketId = userSocketmap[data.receiverId];
+//   if (receiverSocketId) {
+//     io.to(receiverSocketId).emit("stopTyping", { senderId: data.senderId });
+//   }
+// });
 
 export {app, io, server}
 
