@@ -1,0 +1,24 @@
+SERVER--->
+
+   1- Create- a node app using npm init -y
+   2- Install express socket.io-client
+   3- Install cors (for security)
+   4- Install nodemon for dev help
+   5- Write custom type as module for enabling ES6 functionality
+   6- Whenever we build socket.io servers-> we use HTTP HANDSHAKES to initialize and set up the server
+   7- We are creating server name io
+   8- io.on() handle the connection
+ClIENT--->
+
+      1- npm create vite@latest ./
+      2- create a react app with vite
+      3- install socket.io-client
+ 
+
+
+ Description of Chat app
+
+   -> FullStack chat application
+   -> server security enable using cors
+   -> frontend build on react using vite
+   -> web RTC implemented using socket.io  
