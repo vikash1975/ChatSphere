@@ -102,14 +102,27 @@ const ChatArea = ({ selectedUser, onBack }) => {
   }
 
   // Set timeout to stop typing 2s after last keystroke
-  typingTimeoutRef.current = setTimeout(() => {
-    if (selectedUser?._id) {
-      socket.emit("stopTyping", {
-        receiverId: selectedUser._id,
-        senderId: currentUserId
-      });
+//   typingTimeoutRef.current = setTimeout(() => {
+//     if (selectedUser?._id) {
+//       socket.emit("stopTyping", {
+//         receiverId: selectedUser._id,
+//         senderId: currentUserId
+//       });
+//     }
+//   }, 2000);
+// }, [selectedUser?._id, currentUserId]);
+    useEffect(() => {
+  return () => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      if (selectedUser?._id) {
+        socket.emit("stopTyping", {
+          receiverId: selectedUser._id,
+          senderId: currentUserId
+        });
+      }
     }
-  }, 2000);
+  }
 }, [selectedUser?._id, currentUserId]);
 
 //   //  FIXED TYPING HANDLER
@@ -168,8 +181,9 @@ const ChatArea = ({ selectedUser, onBack }) => {
     return <NoChatSelected />;
   }
 
-  const isOnline = onlineUsers.includes(selectedUser._id);
+  // const isOnline = onlineUsers.includes(selectedUser._id);
 
+  const isOnline = onlineUsers.map(u => u.toString()).includes(selectedUser._id?.toString());
   return (
     <div className="flex-1 flex flex-col relative">
       {/* Header */}
